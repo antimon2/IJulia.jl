@@ -65,6 +65,9 @@ ks = Dict(
     "argv" => kernelcmd_array,
     "display_name" => "MXNet (Julia " * Base.VERSION_STRING * debugdesc * ")",
     "language" => "julia",
+    "env" => Dict(
+        "JULIA_PKGDIR" => get(ENV, "JULIA_PKGDIR", ""),
+    ),
 )
 
 destname = "kernel.json"
