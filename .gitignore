@@ -6,3 +6,4 @@
 /deps/julia-*
 *.jl.*.cov
 .vscode
+/deps/mxnet-julia-*
