@@ -5,3 +5,4 @@
 /deps/JUPYTER
 /deps/julia-*
 *.jl.*.cov
+.vscode

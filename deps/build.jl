@@ -52,7 +52,8 @@ end
 # Is IJulia being built from a debug build? If so, add "debug" to the description.
 debugdesc = ccall(:jl_is_debugbuild,Cint,())==1 ? "-debug" : ""
 
-spec_name = "julia-$(VERSION.major).$(VERSION.minor)"*debugdesc
+# spec_name = "julia-$(VERSION.major).$(VERSION.minor)"*debugdesc
+spec_name = "mxnet-julia-$(VERSION.major).$(VERSION.minor)"*debugdesc
 juliakspec = abspath(spec_name)
 
 binary_name = is_windows() ? "julia.exe" : "julia"
@@ -62,7 +63,7 @@ append!(kernelcmd_array, ["--startup-file=yes", "--color=yes", joinpath(ijulia_d
 
 ks = Dict(
     "argv" => kernelcmd_array,
-    "display_name" => "Julia " * Base.VERSION_STRING * debugdesc,
+    "display_name" => "MXNet (Julia " * Base.VERSION_STRING * debugdesc * ")",
     "language" => "julia",
 )
 
