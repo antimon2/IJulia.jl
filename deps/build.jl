@@ -71,7 +71,16 @@ end
 # Install Jupyter kernel-spec file.
 
 include("kspec.jl")
-kspec_cmd, = installkernel("Julia")
+name = "Julia"
+specname = lowercase(name)
+pkgdir = get(ENV, "JULIA_PKGDIR", "")
+jlenv = get(ENV, "JLENV", "")
+if !isempty(pkgdir) || !isempty(jlenv)
+    suffix = isempty(jlenv) ? basename(pkgdir) : jlenv
+    name = name * " " * siffix
+    specname = specname * "-" * replace(lowercase(suffix), r"[^0-9A-Za-z-_.]", "-")
+end
+kspec_cmd, = installkernel(name; specname=specname, pkgdir=pkgdir)
 
 # figure out the notebook command by replacing (only!) the last occurrence of
 # "kernelspec" with "notebook":

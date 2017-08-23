@@ -31,7 +31,8 @@ run(`\$kernelspec remove -f \$kernelname`)
 ```
 """
 function installkernel(name::AbstractString, julia_options::AbstractString...;
-                   specname::AbstractString = replace(lowercase(name), " ", "-"))
+                   specname::AbstractString = replace(lowercase(name), " ", "-"),
+                   pkgdir::AbstractString = get(ENV, "JULIA_PKGDIR", ""))
     # Is IJulia being built from a debug build? If so, add "debug" to the description.
     debugdesc = ccall(:jl_is_debugbuild,Cint,())==1 ? "-debug" : ""
 
@@ -52,6 +53,9 @@ function installkernel(name::AbstractString, julia_options::AbstractString...;
             "display_name" => name * " " * Base.VERSION_STRING * debugdesc,
             "language" => "julia",
         )
+        if !isempty(pkgdir)
+            ks["env"] = Dict("JULIA_PKGDIR" => pkgdir)
+        end
 
         destname = "kernel.json"
         mkpath(juliakspec)
