@@ -77,7 +77,7 @@ pkgdir = get(ENV, "JULIA_PKGDIR", "")
 jlenv = get(ENV, "JLENV", "")
 if !isempty(pkgdir) || !isempty(jlenv)
     suffix = isempty(jlenv) ? basename(pkgdir) : jlenv
-    name = name * " " * siffix
+    name = name * " " * suffix
     specname = specname * "-" * replace(lowercase(suffix), r"[^0-9A-Za-z-_.]", "-")
 end
 kspec_cmd, = installkernel(name; specname=specname, pkgdir=pkgdir)
