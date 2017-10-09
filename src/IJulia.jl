@@ -152,7 +152,7 @@ If the optional argument `replace` is `true`, then the file contents
 replace the *current* cell rather than creating a new cell.
 """
 load(filename::AbstractString, replace::Bool=false) =
-    load_string(readstring(filename), replace)
+    load_string(read(filename, String), replace)
 
 #######################################################################
 # History: global In/Out and other exported history variables
@@ -193,7 +193,7 @@ function clear_history(indices)
 end
 
 # since a range could be huge, intersect it with 1:n first
-clear_history{T<:Integer}(r::Range{T}) =
+clear_history{T<:Integer}(r::AbstractRange{T}) =
     invoke(clear_history, Tuple{Any}, intersect(r, 1:n))
 
 function clear_history()
