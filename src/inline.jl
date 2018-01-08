@@ -21,14 +21,14 @@ function limitstringmime(mime::MIME, x)
         if israwtext(mime, x)
             return String(x)
         else
-            show(IOContext(buf, :limit=>true), mime, x)
+            show(IOContext(buf, :limit=>true, :color=>true), mime, x)
         end
     else
         b64 = Base64EncodePipe(buf)
         if isa(x, Vector{UInt8})
             write(b64, x) # x assumed to be raw binary data
         else
-            show(IOContext(b64, :limit=>true), mime, x)
+            show(IOContext(b64, :limit=>true, :color=>true), mime, x)
         end
         close(b64)
     end
@@ -54,15 +54,20 @@ display(d::InlineDisplay, m::MIME"application/x-latex", x) = display(d, MIME("te
 # deal with annoying text/javascript == application/javascript synonyms
 display(d::InlineDisplay, m::MIME"text/javascript", x) = display(d, MIME("application/javascript"), limitstringmime(m, x))
 
-# if the user explicitly calls display("text/foo", x), we should output the text
+# If the user explicitly calls display("foo/bar", x), we send
+# the display message, also sending text/plain for text data.
 displayable(d::InlineDisplay, M::MIME) = istextmime(M)
 function display(d::InlineDisplay, M::MIME, x)
-    istextmime(M) || throw(MethodError(display, (d, M, x)))
+    sx = limitstringmime(M, x)
+    d = Dict(string(M) => sx)
+    if istextmime(M)
+        d["text/plain"] = sx # directly show text data, e.g. text/csv
+    end
     send_ipython(publish[],
                  msg_pub(execute_msg, "display_data",
                          Dict("source" => "julia", # optional
-                          "metadata" => metadata(x), # optional
-                          "data" => Dict("text/plain" => limitstringmime(M, x)))))
+                              "metadata" => metadata(x), # optional
+                              "data" => d)))
 end
 
 # override display to send IPython a dictionary of all supported
